@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ ad.title }}{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="read-page-grid">
+        <div>
+            {% if ad.image_url %}
+                <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="read-hero-img">
+            {% else %}
+                <div class="read-hero-placeholder">{% if ad.category.name == 'Электроника' %}📱{% elif ad.category.name == 'Авто' %}🚗{% elif ad.category.name == 'Недвижимость' %}🏠{% elif ad.category.name == 'Одежда' %}👗{% elif ad.category.name == 'Мебель' %}🛋{% elif ad.category.name == 'Работа' %}💼{% elif ad.category.name == 'Услуги' %}🔧{% elif ad.category.name == 'Животные' %}🐾{% elif ad.category.name == 'Спорт' %}⚽{% else %}📦{% endif %}</div>
+            {% endif %}
+
+            {% if ad.is_top %}<div style="margin-bottom:12px;"><span class="vip-badge">⭐ VIP — Топ объявление</span></div>{% endif %}
+
+            <h1 class="read-title">{{ ad.title }}</h1>
+
+            <div class="read-meta-row">
+                <span class="meta-tag cat">#{{ ad.category.name }}</span>
+                <span class="meta-tag">📍 {{ ad.city.name }}</span>
+                <span class="meta-tag">🕐 {{ ad.created_at|date:"d.m.Y" }}</span>
+            </div>
+
+            <p class="read-description">{{ ad.description }}</p>
+        </div>
+
+        <div class="price-box {% if ad.is_top %}price-box-vip{% endif %}">
+            <div class="big-price {% if ad.price == 0 %}free{% elif ad.is_top %}gold{% endif %}">
+                {% if ad.price == 0 %}Бесплатно{% else %}{{ ad.price }} ₸{% endif %}
+            </div>
+            <div class="author-row">
+                <div class="author-avatar">{{ ad.author.first_name|first|default:"U" }}</div>
+                <div>
+                    <div style="font-weight:700;font-size:14px;">{{ ad.author.first_name }} {{ ad.author.last_name }}</div>
+                    <div style="font-size:12px;color:var(--muted);">с {{ ad.author.date_joined|date:"Y" }} года</div>
+                </div>
+            </div>
+            <button class="price-box-btn primary">📞 Показать номер</button>
+            <a href="{% url 'toggle_favorite' uuid=ad.uuid %}" class="price-box-btn outline-fav {% if is_favorite %}active{% endif %}" style="display:flex;">
+                {% if is_favorite %}♥ Убрать из избранного{% else %}♡ В избранное{% endif %}
+            </a>
+            {% if request.user == ad.author %}
+            <div class="owner-actions">
+                <a href="{% url 'ad_update' uuid=ad.uuid %}" class="btn-edit">✎ Редактировать</a>
+                <a href="{% url 'ad_delete' uuid=ad.uuid %}" class="btn-del">🗑 Удалить</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if related_ads %}
+    <div class="related-section">
+        <div class="section-title">Похожие объявления</div>
+        <div class="related-grid">
+            {% for rel in related_ads %}
+            <div class="related-card">
+                <a href="{% url 'read_ad_page' uuid=rel.uuid %}">
+                    {% if rel.image_url %}
+                        <img src="{{ rel.image_url }}" alt="{{ rel.title }}" class="related-card-img">
+                    {% else %}
+                        <div class="related-card-placeholder">{% if rel.category.name == 'Электроника' %}📱{% elif rel.category.name == 'Авто' %}🚗{% elif rel.category.name == 'Недвижимость' %}🏠{% elif rel.category.name == 'Одежда' %}👗{% elif rel.category.name == 'Мебель' %}🛋{% else %}📦{% endif %}</div>
+                    {% endif %}
+                    <div class="price-sm {% if rel.price == 0 %}free{% endif %}">{% if rel.price == 0 %}Бесплатно{% else %}{{ rel.price }} ₸{% endif %}</div>
+                    <h4>{{ rel.title }}</h4>
+                    <div class="city-sm">{{ rel.city.name }}</div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="mobile-price-bar">
+    <div class="m-price {% if ad.price == 0 %}free{% elif ad.is_top %}gold{% endif %}">
+        {% if ad.price == 0 %}Бесплатно{% else %}{{ ad.price }} ₸{% endif %}
+    </div>
+    <div class="m-btns">
+        <a href="{% url 'toggle_favorite' uuid=ad.uuid %}" class="m-btn-fav {% if is_favorite %}fav-active{% endif %}">{% if is_favorite %}♥{% else %}♡{% endif %}</a>
+        <button class="m-btn-call">📞 Позвонить</button>
+    </div>
+</div>
+
+<script>document.body.classList.add('read-page-body');</script>
+{% endblock %}

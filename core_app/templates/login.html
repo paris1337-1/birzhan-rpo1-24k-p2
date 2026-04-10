@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <h2>Добро пожаловать</h2>
+        <p class="sub">Войдите в свой аккаунт</p>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label class="form-label">{{ field.label }}</label>
+                <input class="form-input" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" placeholder="{{ field.label }}">
+                {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-submit btn-full">Войти</button>
+        </form>
+        <div class="auth-divider"></div>
+        <p class="auth-link">Нет аккаунта? <a href="{% url 'register_page' %}">Зарегистрироваться</a></p>
+    </div>
+</section>
+{% endblock %}

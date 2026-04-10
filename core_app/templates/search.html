@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="search-card">
+        <h2>Поиск объявлений</h2>
+        <p>Введите название или описание того, что ищете</p>
+        <form action="{% url 'search_results' %}" method="get">
+            <div class="search-input-row">
+                <input name="q" type="text" class="form-input" placeholder="Например: iPhone, Toyota, диван..." required>
+                <button type="submit" class="btn-search">Найти</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

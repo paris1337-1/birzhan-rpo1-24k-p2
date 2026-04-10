@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Новое объявление{% endif %}{% endblock %}
+
+{% block content %}
+<section class="ad-form-section">
+    <div class="container">
+        <div class="ad-form-card">
+            <h2>{% if form.instance.pk %}Редактировать объявление{% else %}Подать объявление{% endif %}</h2>
+            <p class="sub">{% if form.instance.pk %}Измените данные{% else %}Заполните форму и отправьте на проверку{% endif %}</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {% if field.field.widget.input_type == 'select' %}
+                        <select name="{{ field.html_name }}" class="form-input">
+                            {% for val, label in field.field.choices %}
+                                <option value="{{ val }}" {% if field.value|stringformat:"s" == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    {% elif field.field.widget.input_type == 'textarea' %}
+                        <textarea name="{{ field.html_name }}" class="form-input" rows="5" placeholder="{{ field.label }}">{{ field.value|default:'' }}</textarea>
+                    {% else %}
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="form-input" value="{{ field.value|default:'' }}" placeholder="{{ field.label }}">
+                    {% endif %}
+                    {% if field.help_text %}<p class="form-help">{{ field.help_text }}</p>{% endif %}
+                    {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>⚠ {{ e }}</li>{% endfor %}</ul>{% endif %}
+                </div>
+                {% endfor %}
+                <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+                    <a href="{% url 'profile_page' %}" style="padding:13px 24px;background:var(--secondary);color:var(--dark);border-radius:10px;font-weight:600;font-size:14px;">Отмена</a>
+                    <button type="submit" class="btn-submit">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

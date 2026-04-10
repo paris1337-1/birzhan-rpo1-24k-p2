@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | KaspiBoard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="mobile-app-bar">
+    <a href="{% url 'home_page' %}" class="app-logo">Kaspi<span>Board</span></a>
+    <div style="display:flex;gap:7px;align-items:center;">
+        <a href="{% url 'search_page' %}" class="app-icon-btn">🔍</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile_page' %}" class="app-icon-btn">👤</a>
+        {% else %}
+            <a href="{% url 'login_page' %}" class="app-icon-btn">👤</a>
+        {% endif %}
+    </div>
+</div>
+
+<header class="header">
+    <div class="header-inner">
+        <a href="{% url 'home_page' %}" class="logo-text">Kaspi<span>Board</span></a>
+        <nav class="header-nav">
+            <a href="{% url 'all_ads_page' %}" {% if request.resolver_match.url_name == 'all_ads_page' %}class="active-cat"{% endif %}>Все объявления</a>
+            {% for category in categories %}
+            <a href="{% url 'ads_by_category' pk=category.pk %}" {% if request.resolver_match.url_name == 'ads_by_category' and request.resolver_match.kwargs.pk == category.pk %}class="active-cat"{% endif %}>{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+        <div class="header-actions">
+            <a href="{% url 'search_page' %}" class="btn-hg">🔍 Поиск</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile_page' %}" class="btn-hg">👤 {{ user.username }}</a>
+                <a href="{% url 'ad_create' %}" class="btn-hp">+ Подать</a>
+            {% else %}
+                <a href="{% url 'login_page' %}" class="btn-hg">Войти</a>
+                <a href="{% url 'ad_create' %}" class="btn-hp">+ Подать</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main>
+    {% if messages %}
+    <div class="messages-wrapper">
+        {% for m in messages %}
+        <div class="msg msg-{% if m.tags == 'success' %}success{% else %}error{% endif %}">
+            {% if m.tags == 'success' %}✅{% else %}❌{% endif %} {{ m }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<nav class="mobile-bottom-nav">
+    <a href="{% url 'home_page' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'home_page' %}active{% endif %}">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Главная</span>
+    </a>
+    <a href="{% url 'all_ads_page' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'all_ads_page' %}active{% endif %}">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Все</span>
+    </a>
+    <a href="{% url 'ad_create' %}" class="bottom-nav-item bottom-nav-post">
+        <span class="nav-icon">＋</span>
+        <span class="nav-label">Подать</span>
+    </a>
+    <a href="{% url 'search_page' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'search_page' %}active{% endif %}">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-label">Поиск</span>
+    </a>
+    <a href="{% if user.is_authenticated %}{% url 'profile_page' %}{% else %}{% url 'login_page' %}{% endif %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'profile_page' %}active{% endif %}">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Профиль</span>
+    </a>
+</nav>
+
+<footer class="footer">
+    <div>
+        <a href="{% url 'home_page' %}" class="logo-text">Kaspi<span>Board</span></a>
+        <p>&copy; KaspiBoard 2026. Все права защищены.</p>
+    </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

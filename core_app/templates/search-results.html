@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ query }}{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="section-title">Результаты: «{{ query }}»</div>
+
+    {% if results %}
+        {% for ad in results %}
+        <div class="ad-card {% if ad.is_top %}ad-card-vip{% endif %}">
+            <div class="img-wrapper">
+                {% if ad.image_url %}
+                    <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="ad-card-img">
+                {% else %}
+                    <div class="ad-card-placeholder">{% if ad.category.name == 'Электроника' %}📱{% elif ad.category.name == 'Авто' %}🚗{% elif ad.category.name == 'Недвижимость' %}🏠{% elif ad.category.name == 'Одежда' %}👗{% elif ad.category.name == 'Мебель' %}🛋{% elif ad.category.name == 'Работа' %}💼{% elif ad.category.name == 'Услуги' %}🔧{% elif ad.category.name == 'Животные' %}🐾{% elif ad.category.name == 'Спорт' %}⚽{% else %}📦{% endif %}</div>
+                {% endif %}
+            </div>
+            <div class="ad-card-info">
+                {% if ad.is_top %}<span class="vip-badge-static">⭐ VIP</span>{% endif %}
+                <h4>{{ ad.title }}</h4>
+                <div class="price {% if ad.price == 0 %}free{% elif ad.is_top %}vip-price{% endif %}">{% if ad.price == 0 %}Бесплатно{% else %}{{ ad.price }} ₸{% endif %}</div>
+                <div class="meta"><span>{{ ad.city.name }}</span><span>•</span><span>{{ ad.category.name }}</span></div>
+                <p class="desc">{{ ad.description }}</p>
+                <a href="{% url 'read_ad_page' uuid=ad.uuid %}" class="read-btn">Смотреть →</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert-block">
+            <h5>Ничего не найдено по запросу «{{ query }}»</h5>
+            <p>Попробуйте изменить запрос или посмотрите все объявления.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
